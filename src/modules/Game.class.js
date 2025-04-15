@@ -159,39 +159,24 @@ class Game {
   }
 
   getStatus() {
-    for (let row = 0; row < 4; row++) {
-      for (let col = 0; col < 4; col++) {
-        if (this.board[row][col] === 2048) {
-          return 'win';
-        }
-      }
-    }
+    const isEmpty = this.board.every((row) => row.every((cell) => cell === 0));
+    if (isEmpty) return 'idle';
 
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
         const value = this.board[row][col];
 
-        if (value === 0) {
-          return 'playing';
-        }
+        if (value === 2048) return 'win';
+        if (value === 0) return 'playing';
 
-        if (col < 3 && value === this.board[row][col + 1]) {
-          return 'playing';
-        }
-
-        if (row < 3 && value === this.board[row + 1][col]) {
-          return 'playing';
-        }
+        // Check if a move is possible
+        if (col < 3 && value === this.board[row][col + 1]) return 'playing';
+        if (row < 3 && value === this.board[row + 1][col]) return 'playing';
       }
     }
 
-    const isEmpty = this.board.every((row) => row.every((cell) => cell === 0));
-
-    if (isEmpty) {
-      return 'idle';
-    }
-
-    return 'idle';
+    // No empty cells a nd no moves possible
+    return 'lose';
   }
 
   start() {
