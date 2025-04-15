@@ -2,7 +2,7 @@
 
 class Game {
   static INITIAL_STATE = [
-    [0, 0, 0, 0],
+    [0, 0, 0, 30],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -27,10 +27,6 @@ class Game {
         if (cellValue !== 0) {
           cell.textContent = cellValue;
           cell.classList.add(`field-cell--${cellValue}`);
-
-          if (cellValue === 2048) {
-            document.querySelector('.message-win').classList.remove('hidden');
-          }
         } else {
           cell.textContent = '';
         }
@@ -163,19 +159,17 @@ class Game {
   }
 
   getStatus() {
-    const isEmpty = this.board.every((row) => row.every((cell) => cell === 0));
-
-    if (isEmpty) {
-      return 'idle';
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        if (this.board[row][col] === 2048) {
+          return 'win';
+        }
+      }
     }
 
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
         const value = this.board[row][col];
-
-        if (value === 2048) {
-          return 'win';
-        }
 
         if (value === 0) {
           return 'playing';
@@ -190,6 +184,14 @@ class Game {
         }
       }
     }
+
+    const isEmpty = this.board.every((row) => row.every((cell) => cell === 0));
+
+    if (isEmpty) {
+      return 'idle';
+    }
+
+    return 'idle';
   }
 
   start() {
@@ -231,18 +233,14 @@ class Game {
       });
     });
 
-    if (emptyCells.length === 0) {
-      document.querySelector('.message-lose').classList.remove('hidden');
+    if (emptyCells.length > 0) {
+      const randomIndex = Math.floor(Math.random() * emptyCells.length);
+      const { row, col } = emptyCells[randomIndex];
+      const newValue = Math.random() < 0.1 ? 4 : 2;
 
-      return;
+      this.board[row][col] = newValue;
+      this.render();
     }
-
-    const randomIndex = Math.floor(Math.random() * emptyCells.length);
-    const { row, col } = emptyCells[randomIndex];
-    const newValue = Math.random() < 0.1 ? 4 : 2;
-
-    this.board[row][col] = newValue;
-    this.render();
   }
 }
 
